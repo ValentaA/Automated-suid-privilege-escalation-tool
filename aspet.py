@@ -84,7 +84,7 @@ for shell in get_root:
     flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
     for app in lsted:
         if app in app_name(shell):
-            os.system(shell)
+            subprocess.Popen(shell, shell = True)
         else: 
              flsh_print ("[+]Wrong path")
        
@@ -95,7 +95,7 @@ for shel in get_root_wth_pth:
     flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
     for app in lsted:
         if app in app_name(shel):
-            process = subprocess.Popen(shel, shell = True)
+            subprocess.Popen(shel, shell = True)
         else:
              flsh_print ("[+]Not found")
 
