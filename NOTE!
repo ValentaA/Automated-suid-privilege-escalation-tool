@@ -1,6 +1,7 @@
 It works!!!!
 
 Update: 
-Without tmux it wouldn't be able to spawn a shell and to stay in it (it was exiting the script every time the right command was triggered so that was the final solution). 
+Without tmux it wouldn't be able to spawn a shell and to stay in it
+(it was exiting the script every time the right command was triggered so that was the final solution). 
 
 Enjoy!
