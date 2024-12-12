@@ -1,3 +1,6 @@
-The script is not 100% functional because of the problems with closing the session after finding the suid and issuing the command releated to it.
-The error is releated to tty so if anybody know how to fix you are welcome to do it.
+It works!!!!
 
+Update: 
+Without tmux it wouldn't be able to spawn a shell and to stay in it (it was exiting the script every time the right command was triggered so that was the final solution). 
+
+Enjoy!
