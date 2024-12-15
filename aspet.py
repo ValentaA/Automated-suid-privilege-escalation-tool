@@ -1,3 +1,8 @@
+#Warning:
+#Use this tool only for testing in virtual environments or the environments in which you have permissions to do so. 
+#Don't use it for any illegal activities and don't use it on any machine without the owner's permission or knowledge.
+
+
 import os
 import subprocess
 from colorama import Fore, Back, Style
